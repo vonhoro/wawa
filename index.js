@@ -31,9 +31,37 @@ AutojoinRoomsMixin.setupOnClient(client);
 // Listen for messages as normal
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const getVideoInfo = async (youtubeUrl) => {
+  try {
+    const oembedUrl = `https://www.youtube.com/oembed?url=${
+      encodeURIComponent(youtubeUrl)
+    }&format=json`;
+    const response = await fetch(oembedUrl);
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return {
+      title: data.title,
+      thumbnail: data.thumbnail_url, // Best available thumbnail URL
+      uploader: data.author_name,
+      url: youtubeUrl,
+    };
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch title:", error.message);
+    return null;
+  }
+};
+
+// Example usage:
+/*
 const getVideoInfo = async (videoUrl) => {
   try {
+    // https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=wTiYaWFP59Q&format=json
     const { stdout } = await execFilePromise("yt-dlp", [
       "--dump-json",
       "--no-playlist",
@@ -53,7 +81,8 @@ const getVideoInfo = async (videoUrl) => {
     return null;
   }
 };
-
+*/
+// /*
 client.on("room.message", async (roomId, event) => {
   const botUserId = await client.getUserId();
 
@@ -132,7 +161,7 @@ client.on("room.message", async (roomId, event) => {
     // );
   }
 });
-
+// */
 const main = async () => {
   try {
     //listener
@@ -148,3 +177,4 @@ const main = async () => {
 };
 
 main();
+// https://github.com/vonhoro/wawa.git
