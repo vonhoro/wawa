@@ -1,0 +1,16 @@
+{
+  "name": "thebot",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "matrix-bot-sdk": "^0.8.0",
+    "rss-parser": "^3.13.0"
+  }
+}
