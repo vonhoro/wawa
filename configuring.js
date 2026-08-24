@@ -44,7 +44,9 @@ const addChannel = async (
 ) => {
   try {
     const channelId = await getChannelId({ channelName });
-
+    if (!channelId) {
+      return `<h2>Channel ${channelName} Wasn' Added Myabe you are a gay retard!</h2>`;
+    }
     fs.writeFileSync(
       path.join(folder, `${channelName}.json`),
       JSON.stringify(

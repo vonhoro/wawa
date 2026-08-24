@@ -17,21 +17,37 @@ const manageFolders = ({ roomId }) => {
 };
 
 const getChannelId = async ({ channelName }) => {
+  const cleanHandle = channelName.replace(/^@/, "");
+  const targetUrl = `https://www.youtube.com/@${cleanHandle}`;
+
   try {
-    console.log(channelName);
-    const { stdout } = await execFilePromise("yt-dlp", [
-      "--print",
-      "playlist_channel_id",
-      "--flat-playlist", // Extract metadata fast without resolving video streams
-      "--playlist-items",
-      "1", // Look at the first entry only
-      "--no-warnings", // Prevent non-ID text in stdout
-      `https://www.youtube.com/@${channelName}/videos`,
-    ]);
-    return stdout.trim();
+    const response = await fetch(targetUrl, {
+      headers: {
+        // Send a standard browser user-agent to get the desktop page layout
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`YouTube responded with HTTP status ${response.status}`);
+    }
+
+    const html = await response.text();
+
+    // YouTube embeds the channel ID in metadata inside the raw HTML
+    const match = html.match(/"channelId":"(UC[\w-]+)"/) ||
+      html.match(/itemprop="channelId"\s+content="(UC[\w-]+)"/);
+
+    if (match && match[1]) {
+      return match[1]; // Returns the "UC..." Channel ID
+    }
+
+    return null;
   } catch (error) {
-    console.error("Failed to fetch channel ID:", error);
-    throw error;
+    console.error("Error fetching channel ID directly:", error);
+    return null;
   }
 };
 export { getChannelId, manageFolders };

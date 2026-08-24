@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "matrix-bot-sdk": "^0.8.0",
+    "node-cron": "^4.6.0",
     "rss-parser": "^3.13.0"
   }
 }
